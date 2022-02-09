@@ -165,10 +165,10 @@
                 h = o.y;
 
             function $() {
-                // Some settings to run vm?
+                // Some settings to run vm
 
-                // Our full stack?
-                var n = [1 /* Couner on wich opcode we are? */, {
+                // Our full stack
+                var n = [1 /* Couner on wich opcode we are */, {
                     u: a,
                     a: null,
                     f: [],
@@ -194,7 +194,7 @@
             }
 
             function b(n) { // Gets item from stack (generates string from long ass string)
-                return O.default.g(r, n.v) // r = opcode array, N.v = item on stack?
+                return O.default.g(r, n.v) // r = opcode array, N.v = our stack
             }
             var c = [];
 
@@ -559,7 +559,7 @@
         });
         var i, o, l = r(2);
         (o = i = i || {}).g = function(n, t) { // O.default.g -> Gets item from the stack
-            // t -> Current item on the stack? Or the full stack?
+            // t -> our stack
             var r = n[t[0]++];
             if (1 & r) return r >> 1;
             if (r === l.R.x) {
@@ -568,15 +568,15 @@
                     e = 2147483648 & i ? -1 : 1,
                     u = (2146435072 & i) >> 20,
                     f = (1048575 & i) * Math.pow(2, 32) + (o < 0 ? o + Math.pow(2, 32) : o);
-                return 2047 === u ? f ? NaN : 1 / 0 * e : (0 !== u ? f += Math.pow(2, 52) : u++, e * f * Math.pow(2, u - 1075))
+                return 2047 === u ? f ? NaN : 1 / 0 * e : (0 !== u ? f += Math.pow(2, 52) : u++, e * f * Math.pow(2, u - 1075)) // Return int
             }
-            if (r !== l.R.I) return r === l.R.k || r !== l.R.C && (r === l.R.N ? null : r !== l.R.z ? t[r >> 5] : void 0);
+            if (r !== l.R.I) return r === l.R.k || r !== l.R.C && (r === l.R.N ? null : r !== l.R.z ? t[r >> 5] : void 0); // Return item from stack
             for (var c = "", a = n[t[0]++], v = 0; v < a; v++) {
                 var s = n[t[0]++];
                 c += String.fromCharCode(4294967232 & s | 39 * s & 63)
             }
-            console.log(c)
-            return c
+            
+            return c // Return string
         }, void(o.e = function(n) { // Converts long ass string into opcode
             for (var t = l.L, r = t.T, i = t.U, o = r.length - i, e = [], u = 0; u < n.length;)
                 for (var f = 0, c = 1;;) {
