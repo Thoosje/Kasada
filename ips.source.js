@@ -590,17 +590,18 @@
             return e
         }), t.default = i
     }, function(n, t, r) {
+        // Settings that get used to work with stack
         "use strict";
         Object.defineProperty(t, "__esModule", {
             value: !0
-        }), t.R = {
+        }), t.R = { // Gets used to pull data from the stack in the O.default.g function
             x: 4,
             I: 6,
             k: 8,
             C: 10,
             N: 12,
             z: 14
-        }, t.L = {
+        }, t.L = { // Gets used to create opcode array
             T: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
             U: 50
         } // Settings to parse string into opcode
