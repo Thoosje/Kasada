@@ -20,12 +20,13 @@ class Kasada_Dissasambler():
         self.Bytenode = _bytenode
         
         opcodes = self.convert_bytenode_to_opcode(self.Bytenode)
-        print(opcodes[144770])
+        print(opcodes)
 
-    def convert_bytenode_to_opcode(self, _bytenode: str) -> list[int]: # Not 100% working yet
+    def convert_bytenode_to_opcode(self, _bytenode: str) -> list[int]:
         counter: int = 0
         opcode: list[int] = []
         
+        print(len(_bytenode))
         while counter < len(_bytenode):
             f: int = 0; c: int = 1
             while True:
@@ -37,11 +38,14 @@ class Kasada_Dissasambler():
                     opcode.append(0 | f)
                     break
                 
-                f += self.settings['L']['U'] * c; c *= (len(self.settings['L']['T']) - self.settings['L']['U'])
+                f += self.settings['L']['U'] * c
+                c *= (len(self.settings['L']['T']) - self.settings['L']['U'])
             
         return opcode
     
 if __name__ == '__main__':
     with open('./bytenode.txt', 'r') as file:
         bytenode = file.read()
-        Kasada_Dissasambler(bytenode)
+        file.close()
+    
+    Kasada_Dissasambler(bytenode)
