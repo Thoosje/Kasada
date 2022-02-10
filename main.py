@@ -1,4 +1,3 @@
-from threading import local
 from typing import Any, Union
 
 from Utils import exceptions as Kasada_Exceptions
@@ -79,7 +78,7 @@ class Kasada_Dissasambler():
         self.Bytenode = _bytenode
 
         self.Stack = [
-            0, # Opcode counter
+            1, # Opcode counter
             {
                 
             } # Utils funcs
@@ -87,6 +86,9 @@ class Kasada_Dissasambler():
         
         opcodes = self.convert_bytenode_to_opcode(self.Bytenode)
         print(opcodes)
+        
+        for i in range(100):
+            print(self.pull_from_stack(opcodes))
     
     def _add_to_counter(self, value: int) -> int:
         orginalValue = self.Stack[0]
@@ -100,6 +102,9 @@ class Kasada_Dissasambler():
                 return instruction
             
         raise Kasada_Exceptions.OpCode_Does_Not_Exist(f'Opcode {opcode} does not exist.')
+    
+    def _get_from_stack(self, _index: int) -> Any:
+        assert "NOT implemented yet."
     
     def convert_bytenode_to_opcode(self, _bytenode: str) -> list[int]:
         counter: int = 0
@@ -130,8 +135,44 @@ class Kasada_Dissasambler():
             o: int = _opCodeArray[self._add_to_counter(1)]
             e: int = -1 if 2147483648 & i else 1
             u: int = (2146435072 & i) >> 20
-            f: int = (1048575 & i) * (2 ** 32) + ( o + (2 ** 32) if o < 0 else o ) # TODO: Test the if else statement at the end
-    
+            f: int = (1048575 & i) * (2 ** 32) + ( o + (2 ** 32) if o < 0 else o )
+
+            if u == 2047:
+                if f:
+                    return float('nan')
+                else:
+                    return 1 / 0 * e
+            else:
+                if u != 0:
+                    f += 2 ** 52
+                    return f 
+                else:
+                    u += 1
+                    return e * f * (2 ** (u - 1075))
+        
+        if r != self.settings['R']['I']: 
+            if r == self.settings['R']['k']:
+                return True
+            elif r == self.settings['R']['C']:
+                return False
+            
+            if r == self.settings['R']['N']:
+                return None #null
+            else:
+                if r != self.settings['R']['z']:
+                    return self._get_from_stack(r >> 5)
+                else:
+                    return None #void 0 
+        
+        # Not working yet
+        v: int = 0
+        a: int = _opCodeArray[self._add_to_counter(1)]
+        c: str = ''
+        while v < a:
+            s: int = _opCodeArray[self._add_to_counter(1)]
+            c += chr(4294967232 & s | 39 * s & 63)
+            v += 1
+            
 if __name__ == '__main__':
     with open('./bytenode.txt', 'r') as file:
         bytenode = file.read()
