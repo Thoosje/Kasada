@@ -164,7 +164,6 @@ class Kasada_Dissasambler():
                 else:
                     return None #void 0 
         
-        # Not working yet
         v: int = 0
         a: int = _opCodeArray[self._add_to_counter(1)]
         c: str = ''
@@ -172,6 +171,8 @@ class Kasada_Dissasambler():
             s: int = _opCodeArray[self._add_to_counter(1)]
             c += chr(4294967232 & s | 39 * s & 63)
             v += 1
+        
+        return c
             
 if __name__ == '__main__':
     with open('./bytenode.txt', 'r') as file:
