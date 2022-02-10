@@ -87,7 +87,7 @@ class Kasada_Dissasambler():
         opcodes = self.convert_bytenode_to_opcode(self.Bytenode)
         print(opcodes)
         
-        for i in range(100):
+        for i in range(5000):
             print(self.pull_from_stack(opcodes))
     
     def _add_to_counter(self, value: int) -> int:
@@ -104,7 +104,8 @@ class Kasada_Dissasambler():
         raise Kasada_Exceptions.OpCode_Does_Not_Exist(f'Opcode {opcode} does not exist.')
     
     def _get_from_stack(self, _index: int) -> Any:
-        assert "NOT implemented yet."
+        print('Getting value from stack with index: ', _index)
+        return self.Stack[_index]
     
     def convert_bytenode_to_opcode(self, _bytenode: str) -> list[int]:
         counter: int = 0
@@ -160,7 +161,7 @@ class Kasada_Dissasambler():
                 return None #null
             else:
                 if r != self.settings['R']['z']:
-                    return self._get_from_stack(r >> 5)
+                    return self._get_from_stack(r >> 5) # test dit
                 else:
                     return None #void 0 
         
