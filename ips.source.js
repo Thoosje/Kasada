@@ -436,9 +436,9 @@
             });
             
             c.push(function(n) {
-                var t = b(n), // Opcode: 36 Task: ?
+                var t = b(n), // Opcode: 36 Task: Sets el in the helper func array
                     r = b(n);
-                M(n).f[t] = r
+                M(n).f[t] = r // M(n) = helper funcs on stack
             });
             
             c.push(function(n) {

@@ -1,8 +1,10 @@
+import re
 from typing import Any, Union
 
 from Utils import exceptions as Kasada_Exceptions
+from Utils.expandable_list import Expandable_List
 
-class Kasada_Dissasambler():
+class Kasada_Dissasambler():    
     settings: dict[str, Any] = {
         'R': {
             'x': 4,
@@ -18,78 +20,90 @@ class Kasada_Dissasambler():
         }
     }
     
+    # name: opcode name
+    # opcode: opcode id
+    # args: args for the opcode. list[tuple(type, required)]
     instructions: list[dict[str, Any]] = [
-        { 'name': 'add', 'opcode': 0, 'function': None },
-        { 'name': 'sub', 'opcode': 1, 'function': None },
-        { 'name': 'mul', 'opcode': 2, 'function': None },
-        { 'name': 'div', 'opcode': 3, 'function': None },
-        { 'name': 'mod', 'opcode': 4, 'function': None },
-        { 'name': 'not', 'opcode': 5, 'function': None },
-        { 'name': 'shift_r', 'opcode': 6, 'function': None },
-        { 'name': 'shift_l', 'opcode': 7, 'function': None },
-        { 'name': 'shift_r_unsigned', 'opcode': 8 , 'function': None},
-        { 'name': 'shift_l_unsigned', 'opcode': 9, 'function': None },
-        { 'name': 'bitwise_or', 'opcode': 10, 'function': None },
-        { 'name': 'bitwise_xor', 'opcode': 1, 'function': None },
-        { 'name': 'add_to_stack', 'opcode': 12, 'function': None },
-        { 'name': 'add_bytenode_to_stack', 'opcode': 13, 'function': None },
-        { 'name': 'get_el_from_array', 'opcode': 14, 'function': None },
-        { 'name': 'set_el_in_array', 'opcode': 15, 'function': None },
-        { 'name': 'in', 'opcode': 16, 'function': None },
-        { 'name': 'instanceof', 'opcode': 17, 'function': None },
-        { 'name': 'typeof', 'opcode': 18, 'function': None },
-        { 'name': 'get_property_from_obj', 'opcode': 19, 'function': None }, # Not sure if this is correct
-        { 'name': 'set_property_in_obj', 'opcode': 20, 'function': None }, # Not sure if this is correct
-        { 'name': 'create_empty_obj_on_stack', 'opcode': 21, 'function': None },
-        { 'name': 'create_arr_on_stack', 'opcode': 22, 'function': None },
-        { 'name': 'regex', 'opcode': 23, 'function': None },
-        { 'name': 'add_arr_to_stack', 'opcode': 24, 'function': None },
-        { 'name': 'equal', 'opcode': 25, 'function': None },
-        { 'name': 'strict_equal', 'opcode': 26, 'function': None },
-        { 'name': 'not_equal', 'opcode': 27, 'function': None },
-        { 'name': 'not_strict_equal', 'opcode': 28, 'function': None },
-        { 'name': 'less_than', 'opcode': 29, 'function': None },
-        { 'name': 'greater_than', 'opcode': 30, 'function': None },
-        { 'name': 'less_than_or_equal', 'opcode': 31, 'function': None },
-        { 'name': 'greater_than_or_equal', 'opcode': 32, 'function': None },
-        { 'name': 'change_counter', 'opcode': 33, 'function': None },
-        { 'name': 'jump_if_true', 'opcode': 34, 'function': None },
-        { 'name': 'jump_if_false', 'opcode': 35, 'function': None },
-        { 'name': '?', 'opcode': 36, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 37, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 38, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 39, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 40, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 41, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 42, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 43, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 44, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 45, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 46, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 47, 'function': None }, # TODO: What is this?
-        { 'name': '?', 'opcode': 48, 'function': None }, # TODO: What is this?
-        { 'name': 'null', 'opcode': 49, 'function': None },
-        { 'name': 'push_inj0_to_stack', 'opcode': 50, 'function': None },
-        { 'name': 'push_inj1_to_stack', 'opcode': 51, 'function': None },
+        { 'name': 'add', 'opcode': 0 },
+        { 'name': 'sub', 'opcode': 1 },
+        { 'name': 'mul', 'opcode': 2 },
+        { 'name': 'div', 'opcode': 3 },
+        { 'name': 'mod', 'opcode': 4 },
+        { 'name': 'not', 'opcode': 5 },
+        { 'name': 'shift_r', 'opcode': 6 },
+        { 'name': 'shift_l', 'opcode': 7 },
+        { 'name': 'shift_r_unsigned', 'opcode': 8 },
+        { 'name': 'shift_l_unsigned', 'opcode': 9 },
+        { 'name': 'bitwise_or', 'opcode': 10 },
+        { 'name': 'bitwise_xor', 'opcode': 11 },
+        { 'name': 'add_to_stack', 'opcode': 12 },
+        { 'name': 'add_bytenode_to_stack', 'opcode': 13 },
+        { 'name': 'get_el_from_array', 'opcode': 14 },
+        { 'name': 'set_el_in_array', 'opcode': 15 },
+        { 'name': 'in', 'opcode': 16 },
+        { 'name': 'instanceof', 'opcode': 17 },
+        { 'name': 'typeof', 'opcode': 18 },
+        { 'name': 'get_property_from_obj', 'opcode': 19 }, # Not sure if this is correct
+        { 'name': 'set_property_in_obj', 'opcode': 20 }, # Not sure if this is correct
+        { 'name': 'create_empty_obj_on_stack', 'opcode': 21 },
+        { 'name': 'create_arr_on_stack', 'opcode': 22 },
+        { 'name': 'regex', 'opcode': 23 },
+        { 'name': 'add_arr_to_stack', 'opcode': 24 },
+        { 'name': 'equal', 'opcode': 25 },
+        { 'name': 'strict_equal', 'opcode': 26 },
+        { 'name': 'not_equal', 'opcode': 27 },
+        { 'name': 'not_strict_equal', 'opcode': 28 },
+        { 'name': 'less_than', 'opcode': 29 },
+        { 'name': 'greater_than', 'opcode': 30 },
+        { 'name': 'less_than_or_equal', 'opcode': 31 },
+        { 'name': 'greater_than_or_equal', 'opcode': 32 },
+        { 'name': 'change_counter', 'opcode': 33 },
+        { 'name': 'jump_if_true', 'opcode': 34 },
+        { 'name': 'jump_if_false', 'opcode': 35 },
+        { 'name': 'set_helper_array_el', 'opcode': 36 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 37 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 38 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 39 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 40 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 41 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 42 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 43 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 44 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 45 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 46 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 47 }, # TODO: What is this?
+        { 'name': '?', 'opcode': 48 }, # TODO: What is this?
+        { 'name': 'null', 'opcode': 49 },
+        { 'name': 'push_inj0_to_stack', 'opcode': 50 },
+        { 'name': 'push_inj1_to_stack', 'opcode': 51 },
     ]
         
 
-    def __init__(self, _bytenode: str) -> None:
+    def __init__(self, _bytenode: str) -> None:        
         self.Bytenode = _bytenode
 
+        def return_0_array():
+            return [0]
+        
+        def empty_func():
+            pass
+        
         self.Stack = [
             1, # Opcode counter
             {
-                
+                'u': {}, # Window object
+                'a': None,
+                'f': Expandable_List(),
+                'v': return_0_array,
+                'h': return_0_array,
+                '$': empty_func
             } # Utils funcs
         ]
         
         opcodes = self.convert_bytenode_to_opcode(self.Bytenode)
-        print(opcodes)
         
-        for i in range(5000):
-            print(self.pull_from_stack(opcodes))
-    
+        self.run_vm(opcodes)
+        
     def _add_to_counter(self, value: int) -> int:
         orginalValue = self.Stack[0]
         self.Stack[0] += value
@@ -97,9 +111,9 @@ class Kasada_Dissasambler():
         return orginalValue
     
     def _get_opcode_data(self, opcode: int) -> dict[str, Any]:
-        for instruction in self.instructions:
-            if instruction['opcode'] == opcode:
-                return instruction
+        for args in self.instructions:
+            if args['opcode'] == opcode:
+                return args
             
         raise Kasada_Exceptions.OpCode_Does_Not_Exist(f'Opcode {opcode} does not exist.')
     
@@ -127,7 +141,7 @@ class Kasada_Dissasambler():
             
         return opcode
     
-    def pull_from_stack(self, _opCodeArray: list[int]) -> Union[str, int]:
+    def create_data_from_bytenode(self, _opCodeArray: list[int]) -> Union[str, int]:
         r: int = _opCodeArray[self._add_to_counter(1)]
         
         if 1 & r: return r >> 1
@@ -174,6 +188,54 @@ class Kasada_Dissasambler():
             v += 1
         
         return c
+    
+    def place_data_on_stack(self, _opCodeArray: list[int], _data: Any) -> None:
+        self.Stack[_opCodeArray[self._add_to_counter(1)] >> 5] = _data
+    
+    def run_vm(self, _opCodeArray: list) -> None:
+        while True:
+            opCode_data: dict[str, Any] = self._get_opcode_data(_opCodeArray[self._add_to_counter(1)])
+            
+            if opCode_data['name'] == 'null':
+                break
+
+            self.run_instructions(opCode_data['opcode'], _opCodeArray)  
+            
+    def run_instructions(self, _opCode: int, _opCodeArray: list) -> Any:
+        opCode_data: dict[str, Any] = self._get_opcode_data(_opCode)
+        print(_opCode)
+        match _opCode:
+            case 0:
+                return self.create_data_from_bytenode(_opCodeArray) + self.create_data_from_bytenode(_opCodeArray)
+            case 1:
+                return self.create_data_from_bytenode(_opCodeArray) - self.create_data_from_bytenode(_opCodeArray)
+            case 2:
+                return self.create_data_from_bytenode(_opCodeArray) * self.create_data_from_bytenode(_opCodeArray)
+            case 3:
+                return self.create_data_from_bytenode(_opCodeArray) / self.create_data_from_bytenode(_opCodeArray)
+            case 4:
+                return self.create_data_from_bytenode(_opCodeArray) % self.create_data_from_bytenode(_opCodeArray)
+            case 5:
+                return not self.create_data_from_bytenode(_opCodeArray)
+            case 6:
+                return self.create_data_from_bytenode(_opCodeArray) >> self.create_data_from_bytenode(_opCodeArray)
+            case 7:
+                return self.create_data_from_bytenode(_opCodeArray) << self.create_data_from_bytenode(_opCodeArray)
+            case 8:
+                return self.create_data_from_bytenode(_opCodeArray) >> self.create_data_from_bytenode(_opCodeArray)
+            case 9:
+                return self.create_data_from_bytenode(_opCodeArray) << self.create_data_from_bytenode(_opCodeArray)
+            
+            case 36:
+                t = self.create_data_from_bytenode(_opCodeArray)
+                r = self.create_data_from_bytenode(_opCodeArray)
+                print(t, r)
+                self.Stack[1]['f'][t] = r # This will throw an out of range error because python lists behave different then js lists.
+                print(self.Stack[1]['f'])
+                return 'No return data.'
+            
+        
+                
             
 if __name__ == '__main__':
     with open('./bytenode.txt', 'r') as file:
