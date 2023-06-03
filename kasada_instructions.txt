@@ -1,0 +1,111 @@
+# Kasada instructions for: 74533ad81ce5f0cc8fe2a23622947dec #
+
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 3
+                Name: push_empty_array
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 5
+                Name: greater_than
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 7
+                Name: jump_if_true
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 9
+                Name: logical_not
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 11
+                Name: strict_not_equal
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 13
+                Name: XOR
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 15
+                Name: minus
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 17
+                Name: TODO
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 19
+                Name: execute_func_stack_1_param
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 21
+                Name: TODO
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 23
+                Name: TODO
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 25
+                Name: TODO
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 27
+                Name: greater_or_equal
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 29
+                Name: delete_obj_el
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 31
+                Name: smaller_than
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 33
+                Name: edit_obj_el_by_key
+            
+                Opcode: 52
+                Name: mod
+            
+                Opcode: 35
+                Name: typeof
+            
+                Opcode: 52
+                Name: mod
+            
+                    Opcode: 37
+                    Name: new_function
+                    Note: End of function
+                
